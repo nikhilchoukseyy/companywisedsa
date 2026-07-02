@@ -21,6 +21,14 @@ const solvedActivitySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const bookmarkedActivitySchema = new mongoose.Schema(
+  {
+    questionId: { type: String, required: true },
+    bookmarkedAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -63,6 +71,14 @@ passwordHash: {
     },
     solvedActivity: {
       type: [solvedActivitySchema],
+      default: [],
+    },
+    bookmarkedQuestionIds: {
+      type: [String],
+      default: [],
+    },
+    bookmarkedActivity: {
+      type: [bookmarkedActivitySchema],
       default: [],
     },
     preferences: {

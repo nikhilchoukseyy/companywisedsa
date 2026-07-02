@@ -347,38 +347,8 @@ export default function ProfileDashboard({
         )}
       </section>
 
-      {/* Preferences */}
-      <section>
-        <div className="mb-3.5 flex items-baseline justify-between gap-2">
-          <h2 className="text-base font-bold">Preferences</h2>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col gap-1 rounded-[10px] border border-border bg-surface px-3.5 py-3">
-            <span className="text-[11px] uppercase tracking-wide text-text-muted">Last company</span>
-            <strong className="truncate text-sm font-semibold">
-              {user?.preferences?.lastCompany || 'Not set'}
-            </strong>
-          </div>
-          <div className="flex flex-col gap-1 rounded-[10px] border border-border bg-surface px-3.5 py-3">
-            <span className="text-[11px] uppercase tracking-wide text-text-muted">Last file</span>
-            <strong className="truncate text-sm font-semibold">
-              {user?.preferences?.lastFile || 'Not set'}
-            </strong>
-          </div>
-          <div className="flex flex-col gap-1 rounded-[10px] border border-border bg-surface px-3.5 py-3">
-            <span className="text-[11px] uppercase tracking-wide text-text-muted">Difficulty filter</span>
-            <strong className="truncate text-sm font-semibold">
-              {user?.preferences?.difficultyFilter || 'All'}
-            </strong>
-          </div>
-          <div className="flex flex-col gap-1 rounded-[10px] border border-border bg-surface px-3.5 py-3">
-            <span className="text-[11px] uppercase tracking-wide text-text-muted">Language</span>
-            <strong className="truncate text-sm font-semibold">
-              {user?.preferences?.preferredLanguage || 'python'}
-            </strong>
-          </div>
-        </div>
-      </section>
+      
+      
     </section>
   );
 }

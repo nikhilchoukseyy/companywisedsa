@@ -28,6 +28,26 @@ function validateRegister(body) {
   return { name, email, password };
 }
 
+function validateFeedback(body) {
+  const name = cleanString(body.name);
+  const email = cleanString(body.email).toLowerCase();
+  const message = cleanString(body.message);
+
+  if (name.length < 2 || name.length > 80) {
+    throw new HttpError(400, 'Name must be between 2 and 80 characters');
+  }
+
+  if (email && !EMAIL_REGEX.test(email)) {
+    throw new HttpError(400, 'Enter a valid email address');
+  }
+
+  if (message.length < 10 || message.length > 4000) {
+    throw new HttpError(400, 'Feedback must be between 10 and 4000 characters');
+  }
+
+  return { name, email, message };
+}
+
 function validateLogin(body) {
   const email = cleanString(body.email).toLowerCase();
   const password = String(body.password || '');
@@ -90,6 +110,7 @@ function validatePreferences(body) {
 }
 
 module.exports = {
+  validateFeedback,
   validateLogin,
   validatePreferences,
   validateRegister,

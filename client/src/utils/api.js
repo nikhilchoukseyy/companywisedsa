@@ -57,6 +57,14 @@ export const userApi = {
     }),
 };
 
+export const feedbackApi = {
+  send: (payload) =>
+    apiRequest('/feedback', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+};
+
 export const questionApi = {
   markSolved: (questionId) =>
     apiRequest(`/questions/${questionId}/solve`, {

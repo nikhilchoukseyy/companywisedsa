@@ -128,15 +128,20 @@ function loadCatalog() {
 function buildUserDashboard(user) {
   const catalog = loadCatalog();
   const solvedSet = new Set(user.solvedQuestionIds || []);
+  const bookmarkedSet = new Set(user.bookmarkedQuestionIds || []);
   const overallDifficultyTotals = createDifficultyCounter();
   const solvedDifficultyTotals = createDifficultyCounter();
   const solvedQuestions = [];
+  const bookmarkedQuestions = [];
 
   for (const question of catalog.questionsById.values()) {
     incrementDifficulty(overallDifficultyTotals, question.difficulty);
     if (solvedSet.has(question.id)) {
       incrementDifficulty(solvedDifficultyTotals, question.difficulty);
       solvedQuestions.push(question);
+    }
+    if (bookmarkedSet.has(question.id)) {
+      bookmarkedQuestions.push(question);
     }
   }
 
@@ -195,6 +200,7 @@ function buildUserDashboard(user) {
   return {
     totals: {
       solvedQuestions: solvedSet.size,
+      bookmarkedQuestions: bookmarkedSet.size,
       totalUniqueQuestions: catalog.totalUniqueQuestions,
       remainingQuestions: Math.max(catalog.totalUniqueQuestions - solvedSet.size, 0),
       completionPercentage:
@@ -205,6 +211,7 @@ function buildUserDashboard(user) {
       difficultySolved: solvedDifficultyTotals,
     },
     solvedQuestions: solvedQuestions.sort((a, b) => a.title.localeCompare(b.title)),
+    bookmarkedQuestions: bookmarkedQuestions.sort((a, b) => a.title.localeCompare(b.title)),
     companyProgress,
     recentActivity,
   };

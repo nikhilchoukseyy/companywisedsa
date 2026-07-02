@@ -1,7 +1,12 @@
 const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const { buildUserDashboard } = require('../services/catalogService');
-const { getQuestionProgress, markSolved, markUnsolved } = require('../controllers/question.controller');
+const {
+  getQuestionBookmarks,
+  getQuestionProgress,
+  markSolved,
+  markUnsolved,
+} = require('../controllers/question.controller');
 const { validatePreferences } = require('../utils/validation');
 
 const router = express.Router();
@@ -13,6 +18,7 @@ function buildUserPayload(user) {
     email: user.email,
     preferences: user.preferences,
     solvedQuestionIds: user.solvedQuestionIds,
+    bookmarkedQuestionIds: user.bookmarkedQuestionIds,
     createdAt: user.createdAt,
   };
 }
@@ -25,6 +31,7 @@ router.get('/me/dashboard', requireAuth, async (request, response) => {
 });
 
 router.get('/progress', requireAuth, getQuestionProgress);
+router.get('/bookmarks', requireAuth, getQuestionBookmarks);
 
 router.patch('/me/preferences', requireAuth, async (request, response) => {
   const preferences = validatePreferences(request.body);

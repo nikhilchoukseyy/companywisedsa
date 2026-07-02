@@ -11,11 +11,12 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import { FiArrowRight, FiBookmark, FiShield } from 'react-icons/fi';
+import { FiArrowRight, FiBookmark } from 'react-icons/fi';
 import { buildCompanyMap, loadCSV } from './utils/csvLoader';
 import { defaultPreferences, readCookiePreferences, writeCookiePreferences } from './utils/preferences';
 import { questionApi, userApi } from './utils/api';
 import { useAuth } from './hooks/useAuth';
+import HomePage from './components/HomePage';
 import ProfileDashboard from './components/ProfileDashboard';
 import QuestionTable from './components/QuestionTable';
 import GoogleLoginButton from './components/GoogleLoginButton';
@@ -68,115 +69,6 @@ function ShellLayout({
         <Outlet context={outletContext} />
       </main>
     </div>
-  );
-}
-
-function HomePage() {
-  const { dashboard, preferences, companyMap, companies, user, onGoogleLogin } = useOutletContext();
-  const navigate = useNavigate();
-  const openCompany = (company) => navigate(`/company/${encodeURIComponent(company)}`);
-  const lastCompany = preferences.lastCompany && companyMap[preferences.lastCompany] ? preferences.lastCompany : '';
-  const solved = dashboard?.totals?.solvedQuestions || 0;
-  const total = dashboard?.totals?.totalUniqueQuestions || 0;
-  const completion = dashboard?.totals?.completionPercentage || 0;
-  const topCompanies = companies.slice(0, 6);
-
-  return (
-    <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-6 sm:py-5 lg:px-8">
-      <div className="grid gap-5 rounded-[28px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-5 lg:grid-cols-[1.6fr_0.9fr] lg:p-6">
-        <div className="grid gap-5">
-          <div className="inline-flex w-fit items-center rounded-full border border-brand/40 bg-brand/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-brand">
-            Company-wise DSA prep
-          </div>
-          <div className="grid gap-4">
-            <h1 className="max-w-[12ch] text-[clamp(2rem,4vw,3.4rem)] font-black leading-[0.98] tracking-tight text-text-primary">
-              Explore interview questions by company, without losing your progress.
-            </h1>
-            <p className="max-w-2xl text-sm leading-7 text-text-secondary sm:text-[15px]">
-              Jump into a company, track solved questions, and keep your progress synced across
-              devices.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              to="/companies"
-              className="inline-flex w-full items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-bold text-page transition-colors hover:bg-brand-light sm:w-auto"
-            >
-              Browse companies
-            </Link>
-            {lastCompany && (
-              <button
-                type="button"
-                className="inline-flex w-full items-center justify-center rounded-full border border-brand/35 bg-brand/10 px-5 py-3 text-sm font-semibold text-brand transition-colors hover:border-brand hover:bg-brand/15 sm:w-auto"
-                onClick={() => openCompany(lastCompany)}
-              >
-                Continue {lastCompany}
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-          <div className="rounded-2xl border border-border bg-surface-raised p-5">
-            <span className="text-xs font-medium text-text-secondary">Solves</span>
-            <strong className="mt-2 block text-[2rem] font-black leading-none text-brand">
-              {solved}/{total}
-            </strong>
-            <small className="mt-2 block text-sm text-brand">{completion}% completion</small>
-          </div>
-          <div className="rounded-2xl border border-border bg-surface-raised p-5">
-            <span className="text-xs font-medium text-text-secondary">Saved progress</span>
-            <strong className="mt-2 block text-[2rem] font-black leading-none text-brand">
-              {user ? 'On' : 'Off'}
-            </strong>
-            <small className="mt-2 block text-sm text-text-secondary">
-              {user ? 'Synced with your Google account' : 'Sign in with Google'}
-            </small>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-[24px] border border-border bg-surface p-4 sm:p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-lg font-bold text-text-primary">Popular companies</h2>
-            <Link to="/companies" className="text-sm font-semibold text-brand">
-              View all
-            </Link>
-          </div>
-          <div className="flex flex-wrap gap-2.5">
-            {topCompanies.map((company) => (
-              <button
-                key={company}
-                type="button"
-                className="w-full rounded-full border border-border bg-surface-raised px-4 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand/10 hover:text-brand sm:w-auto"
-                onClick={() => openCompany(company)}
-              >
-                {company}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[24px] border border-border bg-surface p-4 sm:p-5">
-          <h2 className="mb-3 text-lg font-bold text-text-primary">Sync progress</h2>
-          <p className="text-sm leading-7 text-text-secondary">
-            Use Google sign-up to save solved questions and restore your progress after refresh.
-          </p>
-          <div className="mt-4">
-            {user ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-easy/30 bg-easy/10 px-4 py-2.5 text-sm font-semibold text-easy">
-                <FiShield size={16} />
-                <span>Your solved questions are synced.</span>
-              </div>
-            ) : (
-              <GoogleLoginButton onSuccess={onGoogleLogin} onError={() => {}} />
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 

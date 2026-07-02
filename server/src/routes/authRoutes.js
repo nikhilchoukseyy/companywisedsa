@@ -48,6 +48,7 @@ function buildAuthResponse(user) {
       preferences: user.preferences,
       createdAt: user.createdAt,
       solvedQuestionIds: user.solvedQuestionIds,
+      bookmarkedQuestionIds: user.bookmarkedQuestionIds,
     },
     dashboard,
   };
