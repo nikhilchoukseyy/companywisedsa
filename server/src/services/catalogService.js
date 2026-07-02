@@ -3,7 +3,7 @@ const path = require('path');
 const { parse } = require('csv-parse/sync');
 
 const DATA_DIR = path.resolve(__dirname, '../../../client/public/data');
-const INDEX_PATH = path.join(DATA_DIR, 'index.json');
+const INDEX_PATH = path.resolve(__dirname, '../../../client/public/index.json');
 
 let catalogCache = null;
 
