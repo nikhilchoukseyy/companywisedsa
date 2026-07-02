@@ -1,0 +1,64 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
+
+  if (response.status === 204) {
+    return null;
+  }
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Request failed');
+  }
+
+  return data;
+}
+
+export const authApi = {
+  me: () => apiRequest('/auth/me'),
+  google: (payload) =>
+    apiRequest('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  login: (payload) =>
+    apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  register: (payload) =>
+    apiRequest('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  logout: () =>
+    apiRequest('/auth/logout', {
+      method: 'POST',
+    }),
+};
+
+export const userApi = {
+  dashboard: () => apiRequest('/users/me/dashboard'),
+  savePreferences: (payload) =>
+    apiRequest('/users/me/preferences', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }),
+  markSolved: (questionId) =>
+    apiRequest(`/users/me/solved/${questionId}`, {
+      method: 'PUT',
+    }),
+  unmarkSolved: (questionId) =>
+    apiRequest(`/users/me/solved/${questionId}`, {
+      method: 'DELETE',
+    }),
+};
