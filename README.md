@@ -99,4 +99,4 @@ Create local environment files before running the app. Do not commit secrets or 
 cd client
 npm run build
 ```
-
+Give a star to repo , Thank you 
