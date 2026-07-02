@@ -11,12 +11,11 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import { Bookmark, ArrowRight, ShieldAlert } from 'lucide-react';
+import { FiArrowRight, FiBookmark, FiShield } from 'react-icons/fi';
 import { buildCompanyMap, loadCSV } from './utils/csvLoader';
 import { defaultPreferences, readCookiePreferences, writeCookiePreferences } from './utils/preferences';
 import { questionApi, userApi } from './utils/api';
 import { useAuth } from './hooks/useAuth';
-import CodeEditor from './components/CodeEditor';
 import ProfileDashboard from './components/ProfileDashboard';
 import QuestionTable from './components/QuestionTable';
 import GoogleLoginButton from './components/GoogleLoginButton';
@@ -34,8 +33,6 @@ function decodeCompanyParam(value) {
 function ShellLayout({
   drawerOpen,
   setDrawerOpen,
-  theme,
-  onThemeToggle,
   onGoogleLogin,
   onGoogleError,
   onLogout,
@@ -49,10 +46,8 @@ function ShellLayout({
   }, [location.pathname, setDrawerOpen]);
 
   return (
-    <div className="app-shell">
+    <div className="min-h-screen overflow-x-hidden bg-page text-text-primary">
       <AppNavbar
-        theme={theme}
-        onThemeToggle={onThemeToggle}
         onMenuClick={() => setDrawerOpen(true)}
         onGoogleLogin={onGoogleLogin}
         onGoogleError={onGoogleError}
@@ -63,15 +58,13 @@ function ShellLayout({
       <AppDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        theme={theme}
-        onThemeToggle={onThemeToggle}
         onGoogleLogin={onGoogleLogin}
         onGoogleError={onGoogleError}
         onLogout={onLogout}
         user={user}
       />
 
-      <main className="app-content">
+      <main className="w-full overflow-x-hidden">
         <Outlet context={outletContext} />
       </main>
     </div>
@@ -89,24 +82,33 @@ function HomePage() {
   const topCompanies = companies.slice(0, 6);
 
   return (
-    <section className="page-shell home-shell">
-      <div className="hero-card">
-        <div className="hero-copy">
-          <div className="eyebrow">Company-wise DSA prep</div>
-          <h1>Explore interview questions by company, without losing your progress.</h1>
-          <p>
-            Jump into a company, track solved questions, and keep your progress synced across
-            devices.
-          </p>
+    <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-6 sm:py-5 lg:px-8">
+      <div className="grid gap-5 rounded-[28px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-5 lg:grid-cols-[1.6fr_0.9fr] lg:p-6">
+        <div className="grid gap-5">
+          <div className="inline-flex w-fit items-center rounded-full border border-brand/40 bg-brand/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-brand">
+            Company-wise DSA prep
+          </div>
+          <div className="grid gap-4">
+            <h1 className="max-w-[12ch] text-[clamp(2rem,4vw,3.4rem)] font-black leading-[0.98] tracking-tight text-text-primary">
+              Explore interview questions by company, without losing your progress.
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-text-secondary sm:text-[15px]">
+              Jump into a company, track solved questions, and keep your progress synced across
+              devices.
+            </p>
+          </div>
 
-          <div className="hero-actions">
-            <Link to="/companies" className="primary-button">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              to="/companies"
+              className="inline-flex w-full items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-bold text-page transition-colors hover:bg-brand-light sm:w-auto"
+            >
               Browse companies
             </Link>
             {lastCompany && (
               <button
                 type="button"
-                className="secondary-button"
+                className="inline-flex w-full items-center justify-center rounded-full border border-brand/35 bg-brand/10 px-5 py-3 text-sm font-semibold text-brand transition-colors hover:border-brand hover:bg-brand/15 sm:w-auto"
                 onClick={() => openCompany(lastCompany)}
               >
                 Continue {lastCompany}
@@ -115,36 +117,40 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="hero-stats">
-          <div className="stat-card">
-            <span>Solves</span>
-            <strong>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="rounded-2xl border border-border bg-surface-raised p-5">
+            <span className="text-xs font-medium text-text-secondary">Solves</span>
+            <strong className="mt-2 block text-[2rem] font-black leading-none text-brand">
               {solved}/{total}
             </strong>
-            <small>{completion}% completion</small>
+            <small className="mt-2 block text-sm text-brand">{completion}% completion</small>
           </div>
-          <div className="stat-card">
-            <span>Saved progress</span>
-            <strong>{user ? 'On' : 'Off'}</strong>
-            <small>{user ? 'Synced with your Google account' : 'Sign in with Google'}</small>
+          <div className="rounded-2xl border border-border bg-surface-raised p-5">
+            <span className="text-xs font-medium text-text-secondary">Saved progress</span>
+            <strong className="mt-2 block text-[2rem] font-black leading-none text-brand">
+              {user ? 'On' : 'Off'}
+            </strong>
+            <small className="mt-2 block text-sm text-text-secondary">
+              {user ? 'Synced with your Google account' : 'Sign in with Google'}
+            </small>
           </div>
         </div>
       </div>
 
-      <div className="page-grid">
-        <div className="surface-card">
-          <div className="section-heading">
-            <h2>Popular companies</h2>
-            <Link to="/companies" className="inline-link">
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div className="rounded-[24px] border border-border bg-surface p-4 sm:p-5">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-text-primary">Popular companies</h2>
+            <Link to="/companies" className="text-sm font-semibold text-brand">
               View all
             </Link>
           </div>
-          <div className="company-chip-grid">
+          <div className="flex flex-wrap gap-2.5">
             {topCompanies.map((company) => (
               <button
                 key={company}
                 type="button"
-                className="company-chip"
+                className="w-full rounded-full border border-border bg-surface-raised px-4 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand/10 hover:text-brand sm:w-auto"
                 onClick={() => openCompany(company)}
               >
                 {company}
@@ -153,21 +159,21 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="surface-card">
-          <div className="section-heading">
-            <h2>Sync progress</h2>
-          </div>
-          <p className="muted-copy">
+        <div className="rounded-[24px] border border-border bg-surface p-4 sm:p-5">
+          <h2 className="mb-3 text-lg font-bold text-text-primary">Sync progress</h2>
+          <p className="text-sm leading-7 text-text-secondary">
             Use Google sign-up to save solved questions and restore your progress after refresh.
           </p>
-          {user ? (
-            <div className="mini-status">
-              <ShieldAlert size={18} />
-              <span>Your solved questions are synced.</span>
-            </div>
-          ) : (
-            <GoogleLoginButton onSuccess={onGoogleLogin} onError={() => {}} />
-          )}
+          <div className="mt-4">
+            {user ? (
+              <div className="inline-flex items-center gap-2 rounded-full border border-easy/30 bg-easy/10 px-4 py-2.5 text-sm font-semibold text-easy">
+                <FiShield size={16} />
+                <span>Your solved questions are synced.</span>
+              </div>
+            ) : (
+              <GoogleLoginButton onSuccess={onGoogleLogin} onError={() => {}} />
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -185,35 +191,47 @@ function CompaniesPage() {
   const openCompany = (company) => navigate(`/company/${encodeURIComponent(company)}`);
 
   return (
-    <section className="page-shell">
-      <div className="page-header">
-        <div>
-          <div className="eyebrow">Companies</div>
-          <h1>Pick a company and start practicing</h1>
-          <p>Browse the catalog, open any company, and continue with the existing question page.</p>
+    <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-5 overflow-x-hidden px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
+      <div className="flex flex-col gap-2">
+        <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">
+          Companies
         </div>
+        <h1 className="text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-text-primary">
+          Pick a company and start practicing
+        </h1>
+        <p className="max-w-3xl text-sm leading-7 text-text-secondary">
+          Browse the catalog, open any company, and continue with the existing question page.
+        </p>
       </div>
 
-      <div className="surface-card">
-        <label className="search-field page-search">
+      <div className="overflow-x-hidden rounded-[24px] border border-border bg-surface p-4 sm:p-5">
+        <label className="relative block">
           <span className="sr-only">Search company</span>
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search company..."
+            className="w-full rounded-full border border-border bg-page px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors focus:border-brand"
           />
         </label>
 
-        <div className="company-grid">
+        <div className="mt-5 grid grid-cols-1 gap-3 min-[520px]:grid-cols-2 xl:grid-cols-3">
           {filteredCompanies.map((company) => {
             const questionCount = companyMap[company]?.length || 0;
             return (
-              <button key={company} type="button" className="company-card" onClick={() => openCompany(company)}>
-                <div>
-                  <strong>{company}</strong>
-                  <span>{questionCount} questions</span>
+              <button
+                key={company}
+                type="button"
+                className="flex w-full min-w-0 items-start justify-between gap-3 rounded-[18px] border border-border bg-surface-raised px-4 py-4 text-left transition-colors hover:border-brand hover:bg-brand/10"
+                onClick={() => openCompany(company)}
+              >
+                <div className="min-w-0 flex-1">
+                  <strong className="block break-words text-sm font-bold leading-snug text-text-primary sm:truncate">
+                    {company}
+                  </strong>
+                  <span className="mt-1 block text-xs text-text-secondary">{questionCount} questions</span>
                 </div>
-                <ArrowRight size={18} />
+                <FiArrowRight className="mt-0.5 shrink-0 text-brand" size={18} />
               </button>
             );
           })}
@@ -228,7 +246,7 @@ function ProfilePage() {
   const navigate = useNavigate();
 
   return (
-    <section className="page-shell">
+    <section className="mx-auto w-full max-w-[1280px] px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
       {user ? (
         <ProfileDashboard
           dashboard={dashboard}
@@ -238,11 +256,162 @@ function ProfilePage() {
           backLabel="Browse companies"
         />
       ) : (
-        <div className="surface-card placeholder-panel">
-          <div className="eyebrow">Profile</div>
-          <h1>Sign in to sync your progress</h1>
-          <p>Your profile and solved questions will be restored across devices after Google sign-in.</p>
-          <GoogleLoginButton onSuccess={onGoogleLogin} onError={() => {}} />
+        <div className="rounded-[24px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-6">
+          <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Profile</div>
+          <h1 className="mt-3 text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-text-primary">
+            Sign in to sync your progress
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-text-secondary">
+            Your profile and solved questions will be restored across devices after Google sign-in.
+          </p>
+          <div className="mt-5">
+            <GoogleLoginButton onSuccess={onGoogleLogin} onError={() => {}} />
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function BookmarksPage() {
+  const { user, onGoogleLogin, onToggleBookmark } = useOutletContext();
+  const [bookmarks, setBookmarks] = useState([]);
+  const [loadingBookmarks, setLoadingBookmarks] = useState(false);
+  const [bookmarkError, setBookmarkError] = useState('');
+  const navigate = useNavigate();
+  const bookmarkedKey = (user?.bookmarkedQuestionIds || []).join('|');
+
+  useEffect(() => {
+    if (!user?.id) {
+      setBookmarks([]);
+      return undefined;
+    }
+
+    let active = true;
+    setLoadingBookmarks(true);
+    setBookmarkError('');
+
+    userApi
+      .bookmarks()
+      .then((payload) => {
+        if (active) {
+          setBookmarks(payload?.bookmarkedQuestions || []);
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setBookmarkError(error.message || 'Could not load bookmarks');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoadingBookmarks(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id, bookmarkedKey]);
+
+  return (
+    <section className="mx-auto w-full max-w-[1280px] px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
+      {user ? (
+        <div className="rounded-[24px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-5">
+          <div className="mb-5 flex flex-col gap-2">
+            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Bookmarks</div>
+            <h1 className="text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-text-primary">
+              Saved questions
+            </h1>
+            <p className="max-w-3xl text-sm leading-7 text-text-secondary">
+              Tap the bookmark icon on any question to save it here and remove it later.
+            </p>
+          </div>
+
+          {loadingBookmarks ? (
+            <div className="rounded-2xl border border-border bg-surface-raised px-5 py-16 text-center text-sm text-text-secondary">
+              Loading bookmarks...
+            </div>
+          ) : bookmarkError ? (
+            <div className="rounded-2xl border border-border bg-surface-raised px-5 py-8 text-sm text-text-secondary">
+              {bookmarkError}
+            </div>
+          ) : bookmarks.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-surface-raised px-5 py-8 text-sm text-text-secondary">
+              No bookmarked questions yet.
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {bookmarks.map((question) => (
+                <article
+                  key={question.questionId}
+                  className="flex h-full flex-col rounded-[20px] border border-border bg-surface-raised p-4 sm:p-5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                    <div className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-brand">
+                      <FiBookmark size={14} className="text-brand" />
+                      <span>Saved question</span>
+                    </div>
+                      <h2 className="text-lg font-bold leading-snug text-text-primary">{question.title}</h2>
+                    </div>
+                    <button
+                      type="button"
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand/40 bg-brand/15 text-brand transition-colors hover:border-brand hover:bg-brand/20"
+                      onClick={() => onToggleBookmark?.(question)}
+                      aria-label={`Remove ${question.title} from bookmarks`}
+                    >
+                      <FiBookmark size={18} />
+                    </button>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-secondary">
+                    <span className="rounded-full border border-border bg-surface px-3 py-1 font-semibold text-text-primary">
+                      {question.difficulty}
+                    </span>
+                    <span className="rounded-full border border-border bg-surface px-3 py-1">
+                      {question.companies?.join(', ') || 'Unknown company'}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    {question.companies?.[0] && (
+                      <button
+                        type="button"
+                        className="inline-flex items-center justify-center rounded-full border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-raised"
+                        onClick={() => navigate(`/company/${encodeURIComponent(question.companies[0])}`)}
+                      >
+                        Open company
+                      </button>
+                    )}
+                    {question.link && (
+                      <a
+                        className="inline-flex items-center justify-center rounded-full bg-brand px-4 py-2.5 text-sm font-bold text-page transition-colors hover:bg-brand-light"
+                        href={question.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open question
+                      </a>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="rounded-[24px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-6">
+          <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Bookmarks</div>
+          <h1 className="mt-3 text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-text-primary">
+            Sign in to save bookmarks
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-text-secondary">
+            Your bookmarked questions will be synced across devices after Google sign-in.
+          </p>
+          <div className="mt-5">
+            <GoogleLoginButton onSuccess={onGoogleLogin} onError={() => {}} />
+          </div>
         </div>
       )}
     </section>
@@ -251,13 +420,18 @@ function ProfilePage() {
 
 function PlaceholderPage({ title, description, icon: Icon }) {
   return (
-    <section className="page-shell">
-      <div className="surface-card placeholder-panel">
-        {Icon && <Icon size={26} />}
-        <div className="eyebrow">{title}</div>
-        <h1>{title}</h1>
-        <p>{description}</p>
-        <Link to="/companies" className="primary-button">
+    <section className="mx-auto w-full max-w-[1280px] px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
+      <div className="rounded-[24px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-6">
+        {Icon && <Icon size={26} className="text-brand" />}
+        <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.22em] text-brand">{title}</div>
+        <h1 className="mt-3 text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-text-primary">
+          {title}
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-text-secondary">{description}</p>
+        <Link
+          to="/companies"
+          className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-bold text-page transition-colors hover:bg-brand-light sm:w-auto"
+        >
           Browse companies
         </Link>
       </div>
@@ -272,12 +446,13 @@ function CompanyPage() {
     companiesLoaded,
     loadCompanyData,
     loading,
+    onToggleBookmark,
     onToggleSolved,
     preferences,
-    selectedQuestion,
-    setSelectedQuestion,
     setPreferences,
     questions,
+    bookmarkedIds,
+    bookmarkingQuestionId,
     solvedIds,
     solvingQuestionId,
     user,
@@ -308,10 +483,12 @@ function CompanyPage() {
 
   if (!companiesLoaded) {
     return (
-      <section className="page-shell">
-        <div className="surface-card placeholder-panel">
-          <div className="eyebrow">Company</div>
-          <h1>Loading catalog...</h1>
+      <section className="mx-auto w-full max-w-[1280px] px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
+        <div className="rounded-[24px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:p-6">
+          <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Company</div>
+          <h1 className="mt-3 text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-text-primary">
+            Loading catalog...
+          </h1>
         </div>
       </section>
     );
@@ -330,34 +507,14 @@ function CompanyPage() {
     navigate('/companies');
   };
 
-  if (selectedQuestion) {
-    return (
-      <section className="page-shell company-shell">
-        <CodeEditor
-          question={selectedQuestion}
-          onBack={() => setSelectedQuestion(null)}
-          onLanguageChange={(language) =>
-            setPreferences((current) => {
-              const next = { ...current, preferredLanguage: language };
-              writeCookiePreferences(next);
-              return next;
-            })
-          }
-          preferredLanguage={preferences.preferredLanguage}
-        />
-      </section>
-    );
-  }
-
   return (
-    <section className="page-shell company-shell">
+    <section className="mx-auto w-full max-w-[1280px] px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
       <QuestionTable
         company={companyName}
         files={files}
         activeFile={activeFile}
         questions={questions}
         loading={loading}
-        onSelect={setSelectedQuestion}
         onStart={handleStart}
         onFileChange={handleFileChange}
         onPreferenceChange={(patch) =>
@@ -368,10 +525,13 @@ function CompanyPage() {
           })
         }
         onToggleSolved={onToggleSolved}
-        initialDifficulty={preferences.difficultyFilter}
-        initialPage={preferences.currentPage}
-        initialSearch={preferences.searchText}
+        onToggleBookmark={onToggleBookmark}
+        initialDifficulty="ALL"
+        initialPage={1}
+        initialSearch=""
         pageSize={preferences.pageSize}
+        bookmarkedIds={bookmarkedIds}
+        bookmarkingQuestionId={bookmarkingQuestionId}
         solvedIds={solvedIds}
         solvingQuestionId={solvingQuestionId}
         user={user}
@@ -386,22 +546,17 @@ export default function App() {
   const [companiesLoaded, setCompaniesLoaded] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [activeFile, setActiveFile] = useState('');
   const [preferences, setPreferences] = useState(() => readCookiePreferences());
   const [solvingQuestionId, setSolvingQuestionId] = useState('');
+  const [bookmarkingQuestionId, setBookmarkingQuestionId] = useState('');
   const [toast, setToast] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
   const { dashboard, googleLogin, logout, setDashboard, setUser, user } = useAuth();
 
   const solvedIds = useMemo(() => new Set(user?.solvedQuestionIds || []), [user?.solvedQuestionIds]);
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const bookmarkedIds = useMemo(() => new Set(user?.bookmarkedQuestionIds || []), [user?.bookmarkedQuestionIds]);
 
   useEffect(() => {
     buildCompanyMap().then((map) => {
@@ -466,7 +621,6 @@ export default function App() {
       const fallbackFile = files.find((file) => file.fileName.includes('All')) || files[files.length - 1];
       const nextFile = preferredFile || fallbackFile;
 
-      setSelectedQuestion(null);
       setLoading(true);
 
       if (!nextFile) {
@@ -541,6 +695,50 @@ export default function App() {
     [refreshDashboard, setUser, solvedIds, showToast, user]
   );
 
+  const handleToggleBookmark = useCallback(
+    async (question) => {
+      if (!user) {
+        setDrawerOpen(true);
+        showToast('Sign up with Google to save bookmarks');
+        return;
+      }
+
+      const questionId = question.questionId;
+      const isBookmarked = bookmarkedIds.has(questionId);
+      setBookmarkingQuestionId(questionId);
+
+      const optimisticBookmarkedIds = isBookmarked
+        ? user.bookmarkedQuestionIds.filter((id) => id !== questionId)
+        : [...user.bookmarkedQuestionIds, questionId];
+
+      setUser({ ...user, bookmarkedQuestionIds: optimisticBookmarkedIds });
+
+      try {
+        const result = isBookmarked
+          ? await questionApi.unmarkBookmarked(questionId)
+          : await questionApi.markBookmarked(questionId);
+
+        setUser((currentUser) =>
+          currentUser
+            ? { ...currentUser, bookmarkedQuestionIds: result.progress.bookmarkedQuestionIds }
+            : currentUser
+        );
+
+        refreshDashboard().catch(() => {
+          showToast('Bookmark updated, but dashboard refresh failed');
+        });
+
+        showToast(isBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks');
+      } catch (error) {
+        setUser(user);
+        showToast(error.message || 'Could not update bookmark');
+      } finally {
+        setBookmarkingQuestionId('');
+      }
+    },
+    [bookmarkedIds, refreshDashboard, setUser, showToast, user]
+  );
+
   const handleLogout = useCallback(async () => {
     await logout();
     setDrawerOpen(false);
@@ -571,13 +769,14 @@ export default function App() {
     dashboard,
     loadCompanyData,
     loading,
+    onToggleBookmark: handleToggleBookmark,
     onToggleSolved: handleToggleSolved,
     onLogout: handleLogout,
     preferences,
-    selectedQuestion,
     setPreferences,
-    setSelectedQuestion,
     questions,
+    bookmarkedIds,
+    bookmarkingQuestionId,
     solvedIds,
     solvingQuestionId,
     user,
@@ -593,8 +792,6 @@ export default function App() {
             <ShellLayout
               drawerOpen={drawerOpen}
               setDrawerOpen={setDrawerOpen}
-              theme={theme}
-              onThemeToggle={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
               onGoogleLogin={handleGoogleSuccess}
               onGoogleError={() => showToast('Google sign-in failed')}
               onLogout={handleLogout}
@@ -606,16 +803,7 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="companies" element={<CompaniesPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route
-            path="bookmarks"
-            element={
-              <PlaceholderPage
-                title="Bookmarks"
-                description="Bookmark support will land here next. The shell already keeps this route in place."
-                icon={Bookmark}
-              />
-            }
-          />
+          <Route path="bookmarks" element={<BookmarksPage />} />
           <Route path="company/:company" element={<CompanyPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
@@ -623,3 +811,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Bookmark, CheckCircle2, Circle } from 'lucide-react';
+import { FiBookmark, FiCheckCircle, FiCircle, FiSearch } from 'react-icons/fi';
 
 const DIFF_STYLE = {
-  EASY: { color: '#3fb950', background: 'rgba(63, 185, 80, 0.16)' },
-  MEDIUM: { color: '#d29922', background: 'rgba(210, 153, 34, 0.16)' },
-  HARD: { color: '#f85149', background: 'rgba(248, 81, 73, 0.16)' },
+  EASY: { text: 'text-easy', bg: 'bg-easy/[0.16]' },
+  MEDIUM: { text: 'text-medium', bg: 'bg-medium/[0.16]' },
+  HARD: { text: 'text-hard', bg: 'bg-hard/[0.16]' },
 };
 
 const FILE_LABELS = {
@@ -17,23 +17,57 @@ const FILE_LABELS = {
 
 const PAGE_SIZE = 25;
 
+function getQuestionLink(question) {
+  return question?.link || question?.Link || '';
+}
+
+function ChipButton({ active, children, ...props }) {
+  return (
+    <button
+      type="button"
+      className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+        active
+          ? 'border-brand bg-brand text-page shadow-[0_8px_18px_rgba(255,161,22,0.18)]'
+          : 'border-border bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary'
+      }`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({ children, className = '', ...props }) {
+  return (
+    <button
+      type="button"
+      className={`rounded-md border border-border bg-surface px-3.5 py-1.5 text-sm font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function QuestionTable({
   company,
   files,
   activeFile,
   questions,
   loading,
-  onSelect,
   onStart,
   onFileChange,
   onPreferenceChange,
   onToggleSolved,
+  onToggleBookmark,
   initialDifficulty = 'ALL',
   initialPage = 1,
   initialSearch = '',
   pageSize = 25,
   solvedIds = new Set(),
+  bookmarkedIds = new Set(),
   solvingQuestionId = '',
+  bookmarkingQuestionId = '',
   user,
 }) {
   const [search, setSearch] = useState('');
@@ -84,87 +118,125 @@ export default function QuestionTable({
     onPreferenceChange?.({ currentPage: nextPage });
   };
 
+  const clearFilters = () => {
+    setSearch('');
+    setDiffFilter('ALL');
+    setCurrentPage(1);
+    onPreferenceChange?.({ searchText: '', difficultyFilter: 'ALL', currentPage: 1 });
+  };
+
   if (!company) {
     return (
-      <section className="empty-state">
-        <button type="button" className="empty-state-badge empty-state-action" onClick={onStart}>
+      <section className="mx-auto flex max-w-[560px] flex-col items-center gap-4 px-4 py-20 text-center">
+        <button
+          type="button"
+          onClick={onStart}
+          className="rounded-full border border-brand bg-brand/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-brand hover:bg-brand/20"
+        >
           Start
         </button>
-        <h1>Select a company to explore questions</h1>
-        <p>
-          Search from the company list, open a time range, and jump straight into the
-          practice set that matches your prep window.
+        <h1 className="text-2xl font-bold text-text-primary">Select a company to explore questions</h1>
+        <p className="text-sm leading-relaxed text-text-secondary">
+          Search from the company list, open a time range, and jump straight into the practice
+          set that matches your prep window.
         </p>
       </section>
     );
   }
 
   return (
-    <section className="question-view">
-      <div className="question-toolbar">
-        <div className="question-toolbar-top">
-          <div className="question-heading">
-            <div className="question-heading-eyebrow question-heading-eyebrow-with-icon">
-              <Bookmark size={14} />
+    <section className="mx-auto w-full max-w-[1200px] px-3 py-4 text-text-primary sm:px-4 sm:py-5 md:px-6">
+      {/* Toolbar */}
+      <div className="mb-5 flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-brand">
+              <FiBookmark size={14} aria-hidden="true" />
               <span>Company question bank</span>
             </div>
-            <h2>{company}</h2>
+            <h2 className="truncate text-lg font-bold sm:text-xl">{company}</h2>
           </div>
 
-          <div className="file-tabs" role="tablist" aria-label="Question range">
+          <div role="tablist" aria-label="Question range" className="flex w-full flex-wrap gap-2 sm:w-auto">
             {files.map((file) => (
-              <button
+              <ChipButton
                 key={file.fileName}
-                type="button"
+                active={activeFile === file.fileName}
                 onClick={() => onFileChange(file)}
-                className={`chip-button ${activeFile === file.fileName ? 'is-active' : ''}`}
               >
                 {FILE_LABELS[file.fileName] || file.fileName}
-              </button>
+              </ChipButton>
             ))}
           </div>
 
-          <span className="question-count">
+          <span className="text-xs text-text-muted sm:self-center">
             {filtered.length} / {questions.length} questions
           </span>
         </div>
 
-        <div className="question-filters">
-          <label className="search-field search-field-wide">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <label className="relative flex-1">
             <span className="sr-only">Search questions</span>
+            <FiSearch
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+              size={15}
+              aria-hidden="true"
+            />
             <input
               value={search}
               onChange={(event) => updateSearch(event.target.value)}
               placeholder="Search by title or topic..."
+              className="w-full rounded-md border border-border bg-surface py-2 pl-9 pr-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none"
             />
           </label>
 
-          <div className="filter-chip-row">
+          <div className="flex flex-wrap gap-2 sm:justify-end">
             {['ALL', 'EASY', 'MEDIUM', 'HARD'].map((difficulty) => (
-              <button
+              <ChipButton
                 key={difficulty}
-                type="button"
+                active={diffFilter === difficulty}
                 onClick={() => updateDifficulty(difficulty)}
-                className={`chip-button ${diffFilter === difficulty ? 'is-active' : ''}`}
               >
                 {difficulty}
-              </button>
+              </ChipButton>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="question-table-wrap">
+      {/* Table */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface">
         {loading ? (
-          <div className="status-panel">Loading questions...</div>
+          <div className="px-4 py-12 text-center text-sm text-text-secondary sm:px-6 sm:py-16">Loading questions...</div>
+        ) : filtered.length === 0 ? (
+          <div className="px-4 py-12 sm:px-6 sm:py-16">
+            <div className="mx-auto flex max-w-lg flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-surface-raised px-5 py-8 text-center">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-brand/30 bg-brand/10 text-brand">
+                <FiSearch size={18} />
+              </div>
+              <h3 className="text-base font-bold text-text-primary">No questions match the current filters</h3>
+              <p className="text-sm leading-6 text-text-secondary">
+                Clear the search or difficulty filter to bring the full question list back.
+              </p>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="inline-flex items-center justify-center rounded-full bg-brand px-4 py-2.5 text-sm font-bold text-page transition-colors hover:bg-brand-light"
+              >
+                Clear filters
+              </button>
+            </div>
+          </div>
         ) : (
-          <div className="table-scroll">
-            <table className="question-table">
+          <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full min-w-[860px] border-collapse text-left text-sm">
               <thead>
-                <tr>
+                <tr className="border-b border-border text-xs uppercase tracking-wide text-text-muted">
                   {['#', 'Status', 'Difficulty', 'Title', 'Frequency', 'Acceptance', 'Topics', 'Action'].map(
                     (heading) => (
-                      <th key={heading}>{heading}</th>
+                      <th key={heading} className="px-4 py-3 font-semibold">
+                        {heading}
+                      </th>
                     )
                   )}
                 </tr>
@@ -172,68 +244,104 @@ export default function QuestionTable({
               <tbody>
                 {pageQuestions.map((question, index) => {
                   const diff = (question.Difficulty || '').toUpperCase();
-                  const diffStyle = DIFF_STYLE[diff] || {};
+                  const diffStyle = DIFF_STYLE[diff] || { text: 'text-text-secondary', bg: 'bg-surface-raised' };
                   const frequency = parseFloat(question.Frequency || 0).toFixed(1);
                   const acceptance = parseFloat(question['Acceptance Rate'] || 0);
                   const acceptancePct =
                     acceptance < 1 ? (acceptance * 100).toFixed(1) : acceptance.toFixed(1);
+                  const isSolved = solvedIds.has(question.questionId);
+                  const isBookmarked = bookmarkedIds.has(question.questionId);
+                  const questionLink = getQuestionLink(question);
 
                   return (
-                    <tr key={question.questionId || index}>
-                      <td className="muted-cell" data-label="#">
-                        {pageStart + index + 1}
-                      </td>
-                      <td data-label="Status">
+                    <tr
+                      key={question.questionId || index}
+                      className="border-b border-border last:border-b-0 hover:bg-surface-raised"
+                    >
+                      <td className="px-4 py-3 text-text-muted">{pageStart + index + 1}</td>
+                      <td className="px-4 py-3">
                         <button
                           type="button"
-                          className={`solved-toggle ${solvedIds.has(question.questionId) ? 'is-solved' : ''}`}
                           disabled={solvingQuestionId === question.questionId}
                           onClick={() => onToggleSolved?.(question)}
                           title={user ? 'Toggle solved state' : 'Sign up with Google to save progress'}
                           aria-label={
-                            solvedIds.has(question.questionId)
+                            isSolved
                               ? `Mark ${question.Title || 'question'} as unsolved`
                               : `Mark ${question.Title || 'question'} as solved`
                           }
+                          className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold transition-colors disabled:opacity-40 ${
+                            isSolved
+                              ? 'text-easy'
+                              : 'text-text-muted hover:text-text-primary'
+                          }`}
                         >
-                          {solvedIds.has(question.questionId) ? (
+                          {isSolved ? (
                             <>
-                              <CheckCircle2 size={24} className="solved-toggle-icon" />
-                              <span className="solved-toggle-label">Solved</span>
+                              <FiCheckCircle size={18} />
+                              <span>Solved</span>
                             </>
                           ) : (
                             <>
-                              <Circle size={24} className="solved-toggle-icon" />
-                              <span className="solved-toggle-label">Solve</span>
+                              <FiCircle size={18} />
+                              <span>Solve</span>
                             </>
                           )}
                         </button>
                       </td>
-                      <td data-label="Difficulty">
-                        <span className="difficulty-pill" style={diffStyle}>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${diffStyle.text} ${diffStyle.bg}`}
+                        >
                           {diff}
                         </span>
                       </td>
-                      <td className="question-title-cell" data-label="Title">
-                        {question.Title}
+                      <td className="max-w-[260px] px-4 py-3 font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="min-w-0 flex-1 truncate">{question.Title}</span>
+                          <button
+                            type="button"
+                            disabled={bookmarkingQuestionId === question.questionId}
+                            onClick={() => onToggleBookmark?.(question)}
+                            title={user ? 'Toggle bookmark' : 'Sign up with Google to save bookmarks'}
+                            aria-label={
+                              isBookmarked
+                                ? `Remove ${question.Title || 'question'} from bookmarks`
+                                : `Add ${question.Title || 'question'} to bookmarks`
+                            }
+                            className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-40 ${
+                              isBookmarked
+                                ? 'border-brand/40 bg-brand/15 text-brand'
+                                : 'border-border bg-surface text-text-muted hover:border-brand hover:bg-brand/10 hover:text-brand'
+                            }`}
+                          >
+                            <FiBookmark size={16} />
+                          </button>
+                        </div>
                       </td>
-                      <td className="muted-cell" data-label="Frequency">
-                        {frequency}
-                      </td>
-                      <td className="muted-cell" data-label="Acceptance">
-                        {acceptancePct}%
-                      </td>
-                      <td className="topics-cell" title={question.Topics} data-label="Topics">
+                      <td className="px-4 py-3 text-text-secondary">{frequency}</td>
+                      <td className="px-4 py-3 text-text-secondary">{acceptancePct}%</td>
+                      <td
+                        className="max-w-[220px] truncate px-4 py-3 text-text-secondary"
+                        title={question.Topics}
+                      >
                         {question.Topics}
                       </td>
-                      <td data-label="Action">
-                        <button
-                          type="button"
-                          onClick={() => onSelect(question)}
-                          className="secondary-button"
-                        >
-                          Solve
-                        </button>
+                      <td className="px-4 py-3">
+                        {questionLink ? (
+                          <a
+                            href={questionLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center justify-center rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 text-sm font-semibold text-brand transition-colors hover:border-brand hover:bg-brand/15"
+                          >
+                            Solve
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center justify-center rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-semibold text-text-muted">
+                            No source
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -244,37 +352,36 @@ export default function QuestionTable({
         )}
       </div>
 
+      {/* Pagination */}
       {!loading && filtered.length > 0 && (
-        <div className="pagination-bar">
-          <div className="pagination-summary">
-            Showing {pageStart + 1}-{Math.min(pageStart + effectivePageSize, filtered.length)} of {filtered.length}
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="text-xs text-text-muted">
+            Showing {pageStart + 1}-{Math.min(pageStart + effectivePageSize, filtered.length)} of{' '}
+            {filtered.length}
           </div>
 
-          <div className="pagination-controls">
-            <button
-              type="button"
-              className="secondary-button"
+          <div className="flex items-center gap-3">
+            <SecondaryButton
               onClick={() => updatePage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
             >
               Previous
-            </button>
+            </SecondaryButton>
 
-            <span className="pagination-page">
+            <span className="text-xs font-medium text-text-secondary">
               Page {currentPage} of {totalPages}
             </span>
 
-            <button
-              type="button"
-              className="secondary-button"
+            <SecondaryButton
               onClick={() => updatePage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
             >
               Next
-            </button>
+            </SecondaryButton>
           </div>
         </div>
       )}
     </section>
   );
 }
+

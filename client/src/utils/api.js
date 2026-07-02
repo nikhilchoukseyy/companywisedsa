@@ -49,6 +49,7 @@ export const authApi = {
 export const userApi = {
   dashboard: () => apiRequest('/users/me/dashboard'),
   progress: () => apiRequest('/users/progress'),
+  bookmarks: () => apiRequest('/users/bookmarks'),
   savePreferences: (payload) =>
     apiRequest('/users/me/preferences', {
       method: 'PATCH',
@@ -63,6 +64,14 @@ export const questionApi = {
     }),
   unmarkSolved: (questionId) =>
     apiRequest(`/questions/${questionId}/solve`, {
+      method: 'DELETE',
+    }),
+  markBookmarked: (questionId) =>
+    apiRequest(`/questions/${questionId}/bookmark`, {
+      method: 'POST',
+    }),
+  unmarkBookmarked: (questionId) =>
+    apiRequest(`/questions/${questionId}/bookmark`, {
       method: 'DELETE',
     }),
 };

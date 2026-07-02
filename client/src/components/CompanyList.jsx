@@ -38,13 +38,13 @@ export default function CompanyList({ companies, selected, onSelect, onClose }) 
         <div className="company-list-meta">{filtered.length} companies</div>
       </div>
 
-      <div className="company-list-scroll">
+      <div className="company-list-scroll ">
         {filtered.map((company) => (
           <button
             key={company}
             type="button"
             onClick={() => onSelect(company)}
-            className={`company-list-item ${selected === company ? 'is-active' : ''}`}
+            className={`company-list-item ${selected === company ? 'is-active' : ''} `}
           >
             <span>{company}</span>
           </button>
