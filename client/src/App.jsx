@@ -17,6 +17,7 @@ import { defaultPreferences, readCookiePreferences, writeCookiePreferences } fro
 import { questionApi, userApi } from './utils/api';
 import { useAuth } from './hooks/useAuth';
 import HomePage from './components/HomePage';
+import Footer from './components/Footer';
 import ProfileDashboard from './components/ProfileDashboard';
 import QuestionTable from './components/QuestionTable';
 import GoogleLoginButton from './components/GoogleLoginButton';
@@ -47,7 +48,7 @@ function ShellLayout({
   }, [location.pathname, setDrawerOpen]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-page text-text-primary">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-page text-text-primary">
       <AppNavbar
         onMenuClick={() => setDrawerOpen(true)}
         onGoogleLogin={onGoogleLogin}
@@ -65,9 +66,11 @@ function ShellLayout({
         user={user}
       />
 
-      <main className="w-full overflow-x-hidden">
+      <main className="flex-1 overflow-x-hidden">
         <Outlet context={outletContext} />
       </main>
+
+      <Footer />
     </div>
   );
 }
