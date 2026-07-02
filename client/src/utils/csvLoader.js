@@ -4,7 +4,7 @@ import { createQuestionId } from './questionId';
 // public/data mein jo index.json banayenge usse fetch karenge
 // pehle companies ki list fetch karo
 export async function buildCompanyMap() {
-  const res = await fetch('/data/index.json');
+  const res = await fetch('/index.json');
   const companies = await res.json();
   return companies;
 }

@@ -2,6 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import QuestionTable from './QuestionTable';
 import { writeCookiePreferences } from '../utils/preferences';
+import {
+  trackCompanyViewed,
+  trackQuestionListRange,
+} from '../utils/analytics';
 
 function decodeCompanyParam(value) {
   try {
@@ -50,6 +54,7 @@ export default function CompanyPage() {
       return undefined;
     }
 
+    trackCompanyViewed(companyName);
     loadCompanyData(companyName, preferences.lastFile).catch(() => {});
   }, [companyName, companyMap, companiesLoaded, loadCompanyData, navigate]);
 
@@ -72,6 +77,7 @@ export default function CompanyPage() {
 
   const files = companyMap[companyName]?.files || companyMap[companyName] || [];
   const handleFileChange = async (file) => {
+    trackQuestionListRange(companyName, file.fileName);
     await loadCompanyData(companyName, file.fileName);
   };
 

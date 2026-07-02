@@ -3,6 +3,7 @@ import { FiBookmark } from 'react-icons/fi';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { userApi } from '../utils/api';
 import GoogleLoginButton from './GoogleLoginButton';
+import { trackCompanyViewed, trackQuestionViewed } from '../utils/analytics';
 
 export default function BookmarksPage() {
   const { user, onGoogleLogin, onToggleBookmark } = useOutletContext();
@@ -110,7 +111,10 @@ export default function BookmarksPage() {
                       <button
                         type="button"
                         className="inline-flex items-center justify-center rounded-full border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-raised"
-                        onClick={() => navigate(`/company/${encodeURIComponent(question.companies[0])}`)}
+                        onClick={() => {
+                          trackCompanyViewed(question.companies[0]);
+                          navigate(`/company/${encodeURIComponent(question.companies[0])}`);
+                        }}
                       >
                         Open company
                       </button>
@@ -121,6 +125,7 @@ export default function BookmarksPage() {
                         href={question.link}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={() => trackQuestionViewed(question)}
                       >
                         Open question
                       </a>

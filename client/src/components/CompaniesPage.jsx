@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { FiArrowRight } from 'react-icons/fi';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { trackCompanyViewed, trackSearch } from '../utils/analytics';
 
 export default function CompaniesPage() {
   const { companies, companyMap } = useOutletContext();
@@ -11,8 +12,10 @@ export default function CompaniesPage() {
     [companies, search]
   );
   const totalCompanies = companies.length;
-  const visibleCompanies = filteredCompanies.length;
-  const openCompany = (company) => navigate(`/company/${encodeURIComponent(company)}`);
+  const openCompany = (company) => {
+    trackCompanyViewed(company);
+    navigate(`/company/${encodeURIComponent(company)}`);
+  };
 
   return (
     <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-5 overflow-x-hidden px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
@@ -32,12 +35,16 @@ export default function CompaniesPage() {
       <div className="overflow-x-hidden rounded-[24px] border border-border bg-surface p-4 sm:p-5">
         <label className="relative block">
           <span className="sr-only">Search company</span>
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search company..."
-            className="w-full rounded-full border border-border bg-page px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors focus:border-brand"
-          />
+            <input
+              value={search}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setSearch(nextValue);
+                trackSearch('companies', nextValue);
+              }}
+              placeholder="Search company..."
+              className="w-full rounded-full border border-border bg-page px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors focus:border-brand"
+            />
         </label>
 
         <div className="mt-5 grid grid-cols-1 gap-3 min-[520px]:grid-cols-2 xl:grid-cols-3">

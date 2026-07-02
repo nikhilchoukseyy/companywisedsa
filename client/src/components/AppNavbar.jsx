@@ -16,9 +16,9 @@ const navItems = [
 
 function navLinkClassName({ isActive }) {
   return [
-    'inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-semibold transition-colors',
+    'inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-all whitespace-nowrap',
     isActive
-      ? 'border border-brand bg-brand text-page shadow-[0_10px_20px_rgba(255,161,22,0.22)]'
+      ? 'bg-brand text-page shadow-lg'
       : 'text-text-secondary hover:bg-surface-raised hover:text-text-primary',
   ].join(' ');
 }
@@ -32,105 +32,218 @@ export default function AppNavbar({
 }) {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
-  const navLinks = user?.role === 'admin' ? [...navItems, { label: 'Admin', to: '/admin' }] : navItems;
+
+  const navLinks =
+    user?.role === 'admin'
+      ? [...navItems, { label: 'Admin', to: '/admin' }]
+      : navItems;
 
   useEffect(() => {
-    function handlePointerDown(event) {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+    function handleClickOutside(e) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(e.target)
+      ) {
         setProfileMenuOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handlePointerDown);
-    return () => document.removeEventListener('mousedown', handlePointerDown);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () =>
+      document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-page/95 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-[1280px] items-center gap-2 px-3 py-3 sm:gap-3 sm:px-6 lg:px-8">
-        <Link to="/" className="flex min-w-0 items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-2xl bg-brand text-sm font-black text-page shadow-[0_12px_28px_rgba(255,161,22,0.3)] sm:h-10 sm:w-10">
-            DP
-          </span>
-          <span className="hidden min-w-0 flex-col sm:flex">
-            <strong className="truncate text-sm font-bold text-text-primary">Company-Wise DSA</strong>
-            <span className="truncate text-xs text-text-secondary">Prep Platform</span>
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        <nav className="mx-auto hidden items-center gap-2 rounded-full border border-border bg-surface p-1 md:flex">
-          {navLinks.map((item) => (
-            <NavLink key={item.to} to={item.to} className={navLinkClassName} end={item.to === '/'}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+        {/* MOBILE */}
+        <div className="flex h-16 items-center justify-between lg:hidden">
 
-        <div className="ml-auto flex items-center gap-2">
-          {user ? (
-            <div className="relative" ref={profileMenuRef}>
-              <button
-                type="button"
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border bg-surface px-2.5 py-1.5 text-sm font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-raised"
-                onClick={() => setProfileMenuOpen((open) => !open)}
-                aria-haspopup="menu"
-                aria-expanded={profileMenuOpen}
-              >
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-surface-raised text-brand">
-                  {String(user.name || 'U').slice(0, 1).toUpperCase()}
-                </span>
-                <span className="hidden max-w-[140px] flex-col text-left sm:flex">
-                  <strong className="truncate text-xs">{user.name}</strong>
-                  <span className="truncate text-[11px] text-text-secondary">{user.email}</span>
-                </span>
-                <FiChevronDown size={15} />
-              </button>
-
-              {profileMenuOpen && (
-                <div
-                  role="menu"
-                  className="absolute right-0 top-[calc(100%+10px)] min-w-56 rounded-2xl border border-border bg-surface p-2 shadow-[0_24px_60px_rgba(0,0,0,0.35)]"
-                >
-                  <Link
-                    to="/profile"
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-text-primary transition-colors hover:bg-surface-raised"
-                    onClick={() => setProfileMenuOpen(false)}
-                  >
-                    <FiUser size={16} />
-                    Profile
-                  </Link>
-                  <button
-                    type="button"
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-text-primary transition-colors hover:bg-surface-raised"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      onLogout?.();
-                    }}
-                  >
-                    <FiLogOut size={16} />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="hidden sm:block">
-              <GoogleLoginButton onSuccess={onGoogleLogin} onError={onGoogleError} />
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-text-primary transition-colors hover:border-border-strong hover:bg-surface-raised md:hidden"
-            onClick={onMenuClick}
-            aria-label="Open navigation menu"
+          {/* Left */}
+          <Link
+            to="/"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-surface shadow-lg transition hover:border-brand/40"
           >
-            <FiMenu size={18} />
-          </button>
+            <img
+              src="/favicon.svg"
+              alt="CompanyWiseDSA"
+              className="h-9 w-9"
+            />
+          </Link>
+
+          {/* Right */}
+          <div className="flex items-center gap-2">
+
+            {user ? (
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() =>
+                    setProfileMenuOpen(!profileMenuOpen)
+                  }
+                  className="flex h-12 items-center gap-2 rounded-full border border-border bg-surface px-3 transition hover:bg-surface-raised"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-raised text-sm font-bold text-brand">
+                    {String(user.name || 'U')
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+
+                  <FiChevronDown size={16} />
+                </button>
+
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-60 rounded-2xl border border-border bg-surface p-2 shadow-2xl">
+
+                    <div className="mb-2 border-b border-border px-3 py-2">
+                      <p className="truncate text-sm font-semibold">
+                        {user.name}
+                      </p>
+
+                      <p className="truncate text-xs text-text-secondary">
+                        {user.email}
+                      </p>
+                    </div>
+
+                    <Link
+                      to="/profile"
+                      onClick={() =>
+                        setProfileMenuOpen(false)
+                      }
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm hover:bg-surface-raised"
+                    >
+                      <FiUser />
+                      Profile
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        onLogout?.();
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm hover:bg-surface-raised"
+                    >
+                      <FiLogOut />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <GoogleLoginButton
+                onSuccess={onGoogleLogin}
+                onError={onGoogleError}
+              />
+            )}
+
+            <button
+              onClick={onMenuClick}
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface transition hover:bg-surface-raised"
+            >
+              <FiMenu size={20} />
+            </button>
+          </div>
         </div>
+
+        {/* DESKTOP */}
+        <div className="hidden h-20 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+
+          {/* Left */}
+          <div className="justify-self-start">
+            <Link
+              to="/"
+              className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-surface shadow-lg transition hover:border-brand/40"
+            >
+              <img
+                src="/favicon.svg"
+                alt="CompanyWiseDSA"
+                className="h-10 w-10"
+              />
+            </Link>
+          </div>
+
+          {/* Center */}
+          <nav className="flex items-center gap-2 rounded-full border border-border bg-surface p-1">
+            {navLinks.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={navLinkClassName}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Right */}
+          <div className="flex justify-self-end">
+
+            {user ? (
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() =>
+                    setProfileMenuOpen(!profileMenuOpen)
+                  }
+                  className="flex h-12 items-center gap-3 rounded-full border border-border bg-surface px-3 transition hover:bg-surface-raised"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-raised font-semibold text-brand">
+                    {String(user.name || 'U')
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+
+                  <div className="max-w-[170px] text-left">
+                    <p className="truncate text-sm font-semibold">
+                      {user.name}
+                    </p>
+
+                    <p className="truncate text-xs text-text-secondary">
+                      {user.email}
+                    </p>
+                  </div>
+
+                  <FiChevronDown />
+                </button>
+
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-border bg-surface p-2 shadow-2xl">
+
+                    <Link
+                      to="/profile"
+                      onClick={() =>
+                        setProfileMenuOpen(false)
+                      }
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-surface-raised"
+                    >
+                      <FiUser />
+                      Profile
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        onLogout?.();
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-surface-raised"
+                    >
+                      <FiLogOut />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <GoogleLoginButton
+                onSuccess={onGoogleLogin}
+                onError={onGoogleError}
+              />
+            )}
+          </div>
+        </div>
+
       </div>
     </header>
   );
 }
-
-

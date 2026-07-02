@@ -3,9 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  envPrefix: ['VITE_', 'POSTHOG_'],
   server: {
     fs: {
-      allow: ['../..']  // 2 levels upar allow karo
+      allow: ['../..'],
     }
   }
 })

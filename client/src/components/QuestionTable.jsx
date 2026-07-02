@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiBookmark, FiCheckCircle, FiCircle, FiSearch } from 'react-icons/fi';
+import { trackQuestionViewed, trackSearch } from '../utils/analytics';
 
 const DIFF_STYLE = {
   EASY: { text: 'text-easy', bg: 'bg-easy/[0.16]' },
@@ -106,6 +107,10 @@ export default function QuestionTable({
   const updateSearch = (value) => {
     setSearch(value);
     onPreferenceChange?.({ searchText: value, currentPage: 1 });
+    trackSearch('questions', value, {
+      company,
+      file: activeFile,
+    });
   };
 
   const updateDifficulty = (value) => {
@@ -334,6 +339,7 @@ export default function QuestionTable({
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center justify-center rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 text-sm font-semibold text-brand transition-colors hover:border-brand hover:bg-brand/15"
+                            onClick={() => trackQuestionViewed(question, { company, file: activeFile })}
                           >
                             Solve
                           </a>
@@ -384,4 +390,3 @@ export default function QuestionTable({
     </section>
   );
 }
-

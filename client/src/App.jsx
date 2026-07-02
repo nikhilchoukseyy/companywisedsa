@@ -19,10 +19,19 @@ import CompaniesPage from './components/CompaniesPage';
 import ProfilePage from './components/ProfilePage';
 import BookmarksPage from './components/BookmarksPage';
 import CompanyPage from './components/CompanyPage';
+import AboutPage from './components/AboutPage';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsConditionsPage from './components/TermsConditionsPage';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboardPage from './components/admin/AdminDashboardPage';
+import AdminAnalyticsPage from './components/admin/AdminAnalyticsPage';
 import AdminSectionPage from './components/admin/AdminSectionPage';
+import {
+  trackBookmarkAdded,
+  trackBookmarkRemoved,
+  trackQuestionSolved,
+} from './utils/analytics';
 
 export default function App() {
   const [companyMap, setCompanyMap] = useState({});
@@ -164,6 +173,9 @@ export default function App() {
         setUser((currentUser) =>
           currentUser ? { ...currentUser, solvedQuestionIds: result.progress.solvedQuestionIds } : currentUser
         );
+        trackQuestionSolved(question, !isSolved, {
+          company: preferences.lastCompany || '',
+        });
 
         refreshDashboard().catch(() => {
           showToast('Solved state updated, but dashboard refresh failed');
@@ -177,7 +189,7 @@ export default function App() {
         setSolvingQuestionId('');
       }
     },
-    [refreshDashboard, setUser, solvedIds, showToast, user]
+    [preferences.lastCompany, refreshDashboard, setUser, solvedIds, showToast, user]
   );
 
   const handleToggleBookmark = useCallback(
@@ -208,6 +220,15 @@ export default function App() {
             ? { ...currentUser, bookmarkedQuestionIds: result.progress.bookmarkedQuestionIds }
             : currentUser
         );
+        if (isBookmarked) {
+          trackBookmarkRemoved(question, {
+            company: preferences.lastCompany || '',
+          });
+        } else {
+          trackBookmarkAdded(question, {
+            company: preferences.lastCompany || '',
+          });
+        }
 
         refreshDashboard().catch(() => {
           showToast('Bookmark updated, but dashboard refresh failed');
@@ -221,7 +242,7 @@ export default function App() {
         setBookmarkingQuestionId('');
       }
     },
-    [bookmarkedIds, refreshDashboard, setUser, showToast, user]
+    [bookmarkedIds, preferences.lastCompany, refreshDashboard, setUser, showToast, user]
   );
 
   const handleLogout = useCallback(async () => {
@@ -294,6 +315,9 @@ export default function App() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="bookmarks" element={<BookmarksPage />} />
           <Route path="company/:company" element={<CompanyPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="terms-and-conditions" element={<TermsConditionsPage />} />
           <Route
             path="admin"
             element={<AdminProtectedRoute loadingUser={loadingUser} user={user} />}
@@ -347,12 +371,7 @@ export default function App() {
               />
               <Route
                 path="analytics"
-                element={
-                  <AdminSectionPage
-                    title="Analytics"
-                    description="Placeholder for metrics, growth insights, and operational reporting."
-                  />
-                }
+                element={<AdminAnalyticsPage user={user} />}
               />
               <Route
                 path="settings"

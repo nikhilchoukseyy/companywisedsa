@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FiMessageSquare, FiSend } from 'react-icons/fi';
 import { feedbackApi } from '../utils/api';
+import { trackFeedbackSubmitted } from '../utils/analytics';
 
 export default function FeedbackForm() {
   const [name, setName] = useState('');
@@ -17,6 +18,10 @@ export default function FeedbackForm() {
 
     try {
       await feedbackApi.send({ name, email, message });
+      trackFeedbackSubmitted({
+        name_present: Boolean(name),
+        email_present: Boolean(email),
+      });
       setSubmitted(true);
       setName('');
       setEmail('');
@@ -30,7 +35,7 @@ export default function FeedbackForm() {
   };
 
   return (
-    <section className="w-full">
+    <section id="feedback" className="w-full">
       <div className="mx-auto w-full max-w-[1280px] rounded-[28px] border border-border bg-surface p-4 shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>

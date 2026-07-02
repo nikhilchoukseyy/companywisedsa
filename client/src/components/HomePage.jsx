@@ -3,6 +3,7 @@ import { FiShield } from 'react-icons/fi';
 import ReviewMarquee from './ReviewMarquee';
 import FeedbackForm from './FeedbackForm';
 import GoogleLoginButton from './GoogleLoginButton';
+import { trackCompanyViewed } from '../utils/analytics';
 
 export default function HomePage() {
   const {
@@ -16,8 +17,10 @@ export default function HomePage() {
 
   const navigate = useNavigate();
 
-  const openCompany = (company) =>
+  const openCompany = (company) => {
+    trackCompanyViewed(company);
     navigate(`/company/${encodeURIComponent(company)}`);
+  };
 
   const lastCompany =
     preferences.lastCompany && companyMap[preferences.lastCompany]
