@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X, Home, Building2, UserCircle2, Bookmark, Settings, LogOut, MoonStar, SunMedium } from 'lucide-react';
+import { X, Home, Building2, UserCircle2, Bookmark, LogOut, MoonStar, SunMedium } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import GoogleLoginButton from './GoogleLoginButton';
 
@@ -8,7 +8,6 @@ const navItems = [
   { label: 'Companies', to: '/companies', icon: Building2 },
   { label: 'Profile', to: '/profile', icon: UserCircle2 },
   { label: 'Bookmarks', to: '/bookmarks', icon: Bookmark },
-  { label: 'Settings', to: '/settings', icon: Settings },
 ];
 
 function navLinkClassName({ isActive }) {

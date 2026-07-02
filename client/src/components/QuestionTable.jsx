@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Bookmark, CheckCircle2, Circle } from 'lucide-react';
 
 const DIFF_STYLE = {
   EASY: { color: '#3fb950', background: 'rgba(63, 185, 80, 0.16)' },
@@ -103,7 +104,10 @@ export default function QuestionTable({
       <div className="question-toolbar">
         <div className="question-toolbar-top">
           <div className="question-heading">
-            <div className="question-heading-eyebrow">Company question bank</div>
+            <div className="question-heading-eyebrow question-heading-eyebrow-with-icon">
+              <Bookmark size={14} />
+              <span>Company question bank</span>
+            </div>
             <h2>{company}</h2>
           </div>
 
@@ -186,8 +190,23 @@ export default function QuestionTable({
                           disabled={solvingQuestionId === question.questionId}
                           onClick={() => onToggleSolved?.(question)}
                           title={user ? 'Toggle solved state' : 'Sign up with Google to save progress'}
+                          aria-label={
+                            solvedIds.has(question.questionId)
+                              ? `Mark ${question.Title || 'question'} as unsolved`
+                              : `Mark ${question.Title || 'question'} as solved`
+                          }
                         >
-                          {solvedIds.has(question.questionId) ? '✓ Solved' : '☐ Mark Solved'}
+                          {solvedIds.has(question.questionId) ? (
+                            <>
+                              <CheckCircle2 size={24} className="solved-toggle-icon" />
+                              <span className="solved-toggle-label">Solved</span>
+                            </>
+                          ) : (
+                            <>
+                              <Circle size={24} className="solved-toggle-icon" />
+                              <span className="solved-toggle-label">Solve</span>
+                            </>
+                          )}
                         </button>
                       </td>
                       <td data-label="Difficulty">

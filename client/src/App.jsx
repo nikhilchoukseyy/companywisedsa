@@ -351,7 +351,7 @@ function CompanyPage() {
 
   return (
     <section className="page-shell company-shell">
-        <QuestionTable
+      <QuestionTable
         company={companyName}
         files={files}
         activeFile={activeFile}
@@ -606,15 +606,6 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="companies" element={<CompaniesPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route
-            path="settings"
-            element={
-              <PlaceholderPage
-                title="Settings"
-                description="Layout and navigation are ready. Settings controls will land here next."
-              />
-            }
-          />
           <Route
             path="bookmarks"
             element={

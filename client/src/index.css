@@ -153,6 +153,12 @@ button:disabled {
   color: var(--muted);
 }
 
+.question-heading-eyebrow-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .company-list-title,
 .mobile-header-title {
   font-size: 1.2rem;
@@ -507,20 +513,46 @@ button:disabled {
 }
 
 .solved-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgba(149, 166, 189, 0.12);
   color: var(--muted);
   cursor: pointer;
-  padding: 0.42rem 0.68rem;
-  font-size: 0.82rem;
+  min-height: 2.8rem;
+  padding: 0.45rem 0.85rem;
+  font-size: clamp(0.78rem, 1vw, 0.92rem);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .solved-toggle.is-solved {
   background: rgba(63, 185, 80, 0.16);
   border-color: rgba(63, 185, 80, 0.45);
   color: var(--success);
+}
+
+.solved-toggle-icon {
+  flex-shrink: 0;
+}
+
+.solved-toggle-label {
+  line-height: 1;
+}
+
+@media (max-width: 680px) {
+  .solved-toggle {
+    width: 100%;
+    justify-content: flex-start;
+    padding-inline: 0.75rem;
+  }
+
+  .solved-toggle-label {
+    font-size: 0.82rem;
+  }
 }
 
 .modal-backdrop {

@@ -7,7 +7,6 @@ const navItems = [
   { label: 'Home', to: '/' },
   { label: 'Companies', to: '/companies' },
   { label: 'Bookmarks', to: '/bookmarks' },
-  { label: 'Settings', to: '/settings' },
 ];
 
 function navLinkClassName({ isActive }) {
@@ -89,10 +88,6 @@ export default function AppNavbar({
                 <Link to="/profile" className="profile-dropdown-item" onClick={() => setProfileMenuOpen(false)}>
                   <UserCircle2 size={16} />
                   Profile
-                </Link>
-                <Link to="/settings" className="profile-dropdown-item" onClick={() => setProfileMenuOpen(false)}>
-                  <span className="profile-dot" />
-                  Settings
                 </Link>
                 <button
                   type="button"
