@@ -83,3 +83,7 @@ export const questionApi = {
       method: 'DELETE',
     }),
 };
+
+export const adminApi = {
+  dashboard: () => apiRequest('/admin/dashboard'),
+};

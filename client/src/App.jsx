@@ -19,6 +19,10 @@ import CompaniesPage from './components/CompaniesPage';
 import ProfilePage from './components/ProfilePage';
 import BookmarksPage from './components/BookmarksPage';
 import CompanyPage from './components/CompanyPage';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboardPage from './components/admin/AdminDashboardPage';
+import AdminSectionPage from './components/admin/AdminSectionPage';
 
 export default function App() {
   const [companyMap, setCompanyMap] = useState({});
@@ -33,7 +37,7 @@ export default function App() {
   const [toast, setToast] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { dashboard, googleLogin, logout, setDashboard, setUser, user } = useAuth();
+  const { dashboard, googleLogin, logout, loadingUser, setDashboard, setUser, user } = useAuth();
 
   const solvedIds = useMemo(() => new Set(user?.solvedQuestionIds || []), [user?.solvedQuestionIds]);
   const bookmarkedIds = useMemo(() => new Set(user?.bookmarkedQuestionIds || []), [user?.bookmarkedQuestionIds]);
@@ -261,6 +265,7 @@ export default function App() {
     questions,
     bookmarkedIds,
     bookmarkingQuestionId,
+    loadingUser,
     solvedIds,
     solvingQuestionId,
     user,
@@ -289,6 +294,77 @@ export default function App() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="bookmarks" element={<BookmarksPage />} />
           <Route path="company/:company" element={<CompanyPage />} />
+          <Route
+            path="admin"
+            element={<AdminProtectedRoute loadingUser={loadingUser} user={user} />}
+          >
+            <Route element={<AdminLayout onLogout={handleLogout} user={user} />}>
+              <Route index element={<AdminDashboardPage />} />
+              <Route
+                path="users"
+                element={
+                  <AdminSectionPage
+                    title="Users"
+                    description="Manage account access, review roles, and prepare future user moderation tools."
+                  />
+                }
+              />
+              <Route
+                path="companies"
+                element={
+                  <AdminSectionPage
+                    title="Companies"
+                    description="Maintain the company catalog, metadata, and content organization in a central place."
+                  />
+                }
+              />
+              <Route
+                path="questions"
+                element={
+                  <AdminSectionPage
+                    title="Questions"
+                    description="Review question records, moderation workflows, and future bulk management actions."
+                  />
+                }
+              />
+              <Route
+                path="reviews"
+                element={
+                  <AdminSectionPage
+                    title="Reviews"
+                    description="Collect and curate user-facing review and testimonial content before publication."
+                  />
+                }
+              />
+              <Route
+                path="feedback"
+                element={
+                  <AdminSectionPage
+                    title="Feedback"
+                    description="Track product feedback and support signals before adding triage workflows."
+                  />
+                }
+              />
+              <Route
+                path="analytics"
+                element={
+                  <AdminSectionPage
+                    title="Analytics"
+                    description="Placeholder for metrics, growth insights, and operational reporting."
+                  />
+                }
+              />
+              <Route
+                path="settings"
+                element={
+                  <AdminSectionPage
+                    title="Settings"
+                    description="Configure platform-wide settings, feature flags, and admin preferences."
+                  />
+                }
+              />
+            </Route>
+          </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

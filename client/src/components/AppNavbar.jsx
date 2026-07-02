@@ -32,6 +32,7 @@ export default function AppNavbar({
 }) {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
+  const navLinks = user?.role === 'admin' ? [...navItems, { label: 'Admin', to: '/admin' }] : navItems;
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -58,7 +59,7 @@ export default function AppNavbar({
         </Link>
 
         <nav className="mx-auto hidden items-center gap-2 rounded-full border border-border bg-surface p-1 md:flex">
-          {navItems.map((item) => (
+          {navLinks.map((item) => (
             <NavLink key={item.to} to={item.to} className={navLinkClassName} end={item.to === '/'}>
               {item.label}
             </NavLink>

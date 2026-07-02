@@ -45,26 +45,28 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
     authProvider: {
-  type: String,
-  enum: ["google", "local"],
-  default: "google",
-},
-
-googleId: {
-  type: String,
-  default: null,
-},
-
-avatar: {
-  type: String,
-  default: "",
-},
-
-passwordHash: {
-  type: String,
-  default: null,
-},
+      type: String,
+      enum: ['google', 'local'],
+      default: 'google',
+    },
+    googleId: {
+      type: String,
+      default: null,
+    },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    passwordHash: {
+      type: String,
+      default: null,
+    },
     solvedQuestionIds: {
       type: [String],
       default: [],

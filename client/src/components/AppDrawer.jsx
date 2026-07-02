@@ -4,6 +4,7 @@ import {
   FiBriefcase,
   FiHome,
   FiLogOut,
+  FiShield,
   FiUser,
   FiX,
 } from 'react-icons/fi';
@@ -34,6 +35,8 @@ export default function AppDrawer({
   onLogout,
   user,
 }) {
+  const navLinks = user?.role === 'admin' ? [...navItems, { label: 'Admin', to: '/admin', icon: FiShield }] : navItems;
+
   useEffect(() => {
     function handleEscape(event) {
       if (event.key === 'Escape') {
@@ -83,7 +86,7 @@ export default function AppDrawer({
         </div>
 
         <nav className="grid content-start gap-2" aria-label="Mobile navigation">
-          {navItems.map((item) => {
+          {navLinks.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink key={item.to} to={item.to} className={navLinkClassName} onClick={onClose} end={item.to === '/'}>

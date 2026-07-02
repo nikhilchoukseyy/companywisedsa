@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const questionRoutes = require('./routes/question.routes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const config = require('./config');
 const { loadCatalog } = require('./services/catalogService');
 
@@ -47,6 +48,7 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/questions', authLimiter, questionRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use((error, _request, response, _next) => {
   const statusCode = error.statusCode || 500;

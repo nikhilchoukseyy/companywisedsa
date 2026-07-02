@@ -5,6 +5,7 @@ const User = require('../models/User');
 const { requireAuth } = require('../middleware/auth');
 const { findOrCreateGoogleUser } = require('../services/auth.service');
 const { buildUserDashboard } = require('../services/catalogService');
+const { serializeUser } = require('../utils/serializeUser');
 const config = require('../config');
 const HttpError = require('../utils/httpError');
 const { validateLogin, validateRegister } = require('../utils/validation');
@@ -42,9 +43,7 @@ function buildAuthResponse(user) {
 
   return {
     user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
+      ...serializeUser(user),
       preferences: user.preferences,
       createdAt: user.createdAt,
       solvedQuestionIds: user.solvedQuestionIds,

@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const { buildUserDashboard } = require('../services/catalogService');
+const { serializeUser } = require('../utils/serializeUser');
 const {
   getQuestionBookmarks,
   getQuestionProgress,
@@ -13,9 +14,7 @@ const router = express.Router();
 
 function buildUserPayload(user) {
   return {
-    id: user._id,
-    name: user.name,
-    email: user.email,
+    ...serializeUser(user),
     preferences: user.preferences,
     solvedQuestionIds: user.solvedQuestionIds,
     bookmarkedQuestionIds: user.bookmarkedQuestionIds,

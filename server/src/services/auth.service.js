@@ -39,6 +39,7 @@ async function findOrCreateGoogleUser(idToken) {
     googleId,
     avatar: picture || '',
     authProvider: 'google',
+    role: 'user',
   });
 
   return user;
