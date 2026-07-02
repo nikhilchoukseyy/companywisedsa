@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/authRoutes');
+const questionRoutes = require('./routes/question.routes');
 const userRoutes = require('./routes/userRoutes');
 const config = require('./config');
 const { loadCatalog } = require('./services/catalogService');
@@ -42,6 +43,7 @@ app.get('/api/health', (_request, response) => {
 });
 
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/questions', authLimiter, questionRoutes);
 app.use('/api/users', userRoutes);
 
 app.use((error, _request, response, _next) => {

@@ -48,17 +48,21 @@ export const authApi = {
 
 export const userApi = {
   dashboard: () => apiRequest('/users/me/dashboard'),
+  progress: () => apiRequest('/users/progress'),
   savePreferences: (payload) =>
     apiRequest('/users/me/preferences', {
       method: 'PATCH',
       body: JSON.stringify(payload),
     }),
+};
+
+export const questionApi = {
   markSolved: (questionId) =>
-    apiRequest(`/users/me/solved/${questionId}`, {
-      method: 'PUT',
+    apiRequest(`/questions/${questionId}/solve`, {
+      method: 'POST',
     }),
   unmarkSolved: (questionId) =>
-    apiRequest(`/users/me/solved/${questionId}`, {
+    apiRequest(`/questions/${questionId}/solve`, {
       method: 'DELETE',
     }),
 };

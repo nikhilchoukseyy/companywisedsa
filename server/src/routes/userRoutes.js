@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const { buildUserDashboard } = require('../services/catalogService');
+const { getQuestionProgress, markSolved, markUnsolved } = require('../controllers/question.controller');
 const { validatePreferences } = require('../utils/validation');
 
 const router = express.Router();
@@ -23,6 +24,8 @@ router.get('/me/dashboard', requireAuth, async (request, response) => {
   });
 });
 
+router.get('/progress', requireAuth, getQuestionProgress);
+
 router.patch('/me/preferences', requireAuth, async (request, response) => {
   const preferences = validatePreferences(request.body);
 
@@ -37,39 +40,8 @@ router.patch('/me/preferences', requireAuth, async (request, response) => {
   });
 });
 
-router.put('/me/solved/:questionId', requireAuth, async (request, response) => {
-  const { questionId } = request.params;
-  const solvedIds = new Set(request.user.solvedQuestionIds);
-  solvedIds.add(questionId);
-  request.user.solvedQuestionIds = Array.from(solvedIds);
-  request.user.solvedActivity = [
-    { questionId, solvedAt: new Date() },
-    ...request.user.solvedActivity.filter((activity) => activity.questionId !== questionId),
-  ].slice(0, 100);
-  await request.user.save();
+router.put('/me/solved/:questionId', requireAuth, markSolved);
 
-  return response.json({
-    questionId,
-    solved: true,
-    solvedQuestionIds: request.user.solvedQuestionIds,
-    dashboard: buildUserDashboard(request.user),
-  });
-});
-
-router.delete('/me/solved/:questionId', requireAuth, async (request, response) => {
-  const { questionId } = request.params;
-  request.user.solvedQuestionIds = request.user.solvedQuestionIds.filter((id) => id !== questionId);
-  request.user.solvedActivity = request.user.solvedActivity.filter(
-    (activity) => activity.questionId !== questionId
-  );
-  await request.user.save();
-
-  return response.json({
-    questionId,
-    solved: false,
-    solvedQuestionIds: request.user.solvedQuestionIds,
-    dashboard: buildUserDashboard(request.user),
-  });
-});
+router.delete('/me/solved/:questionId', requireAuth, markUnsolved);
 
 module.exports = router;

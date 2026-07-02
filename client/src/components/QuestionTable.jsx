@@ -185,9 +185,9 @@ export default function QuestionTable({
                           className={`solved-toggle ${solvedIds.has(question.questionId) ? 'is-solved' : ''}`}
                           disabled={solvingQuestionId === question.questionId}
                           onClick={() => onToggleSolved?.(question)}
-                          title={user ? 'Toggle solved state' : 'Log in to save solved questions'}
+                          title={user ? 'Toggle solved state' : 'Sign up with Google to save progress'}
                         >
-                          {solvedIds.has(question.questionId) ? 'Solved' : 'Unsolved'}
+                          {solvedIds.has(question.questionId) ? '✓ Solved' : '☐ Mark Solved'}
                         </button>
                       </td>
                       <td data-label="Difficulty">

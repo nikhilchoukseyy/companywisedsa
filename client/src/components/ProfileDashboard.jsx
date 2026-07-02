@@ -18,7 +18,7 @@ function ProgressBar({ value }) {
   );
 }
 
-export default function ProfileDashboard({ dashboard, onBack, onLogout, user }) {
+export default function ProfileDashboard({ dashboard, onBack, onLogout, user, backLabel = 'Back to questions' }) {
   const totals = dashboard?.totals;
   const companyProgress = dashboard?.companyProgress || [];
   const recentActivity = dashboard?.recentActivity || [];
@@ -44,7 +44,7 @@ export default function ProfileDashboard({ dashboard, onBack, onLogout, user }) 
         </div>
         <div className="profile-actions">
           <button type="button" className="secondary-button" onClick={onBack}>
-            Back to questions
+            {backLabel}
           </button>
           <button type="button" className="secondary-button" onClick={onLogout}>
             Logout
