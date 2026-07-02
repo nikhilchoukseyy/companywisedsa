@@ -3,17 +3,17 @@ import { FiGithub, FiInstagram, FiLinkedin } from 'react-icons/fi';
 const SOCIAL_LINKS = [
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/',
+    href: 'https://www.linkedin.com/in/nikhilchoukseyy',
     icon: FiLinkedin,
   },
   {
     label: 'Instagram',
-    href: 'https://www.instagram.com/',
+    href: 'https://www.instagram.com/nikhilchoukseyy',
     icon: FiInstagram,
   },
   {
     label: 'GitHub',
-    href: 'https://github.com/',
+    href: 'https://github.com/nikhilchoukseyy',
     icon: FiGithub,
   },
 ];
