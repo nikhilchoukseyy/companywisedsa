@@ -130,12 +130,7 @@ export default function AppNavbar({
                   </div>
                 )}
               </div>
-            ) : (
-              <GoogleLoginButton
-                onSuccess={onGoogleLogin}
-                onError={onGoogleError}
-              />
-            )}
+            ) : null}
 
             <button
               onClick={onMenuClick}
