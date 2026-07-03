@@ -1,4 +1,14 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+function normalizeApiBaseUrl(value) {
+  const rawUrl = (value || 'http://localhost:4000/api').trim().replace(/\/+$/, '');
+
+  if (rawUrl.endsWith('/api')) {
+    return rawUrl;
+  }
+
+  return `${rawUrl}/api`;
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
