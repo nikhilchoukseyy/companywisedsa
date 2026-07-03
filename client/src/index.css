@@ -23,3 +23,34 @@
     color: #e8e8e8;
   }
 }
+
+@layer components {
+  .app-toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    max-width: min(320px, calc(100vw - 2rem));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    background: rgba(17, 17, 17, 0.96);
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: #ffffff;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(14px);
+  }
+
+  @media (max-width: 640px) {
+    .app-toast {
+      right: 0.75rem;
+      bottom: 0.75rem;
+      max-width: calc(100vw - 1.5rem);
+      border-radius: 1rem;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.8125rem;
+    }
+  }
+}

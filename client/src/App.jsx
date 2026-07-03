@@ -294,7 +294,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {toast && <div className="toast">{toast}</div>}
+      {toast && <div className="app-toast">{toast}</div>}
 
       <Routes>
         <Route
