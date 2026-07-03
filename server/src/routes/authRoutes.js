@@ -14,25 +14,28 @@ const router = express.Router();
 
 function setAuthCookie(response, userId) {
   const token = jwt.sign({ userId }, config.jwtSecret, { expiresIn: '30d' });
+  const isProduction = config.nodeEnv === 'production';
 
   response.cookie('token', token, {
     httpOnly: true,
     path: '/',
-    sameSite: 'lax',
-    secure: config.nodeEnv === 'production',
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
     maxAge: 1000 * 60 * 60 * 24 * 30,
   });
 }
 
 function clearAuthCookie(response) {
+  const isProduction = config.nodeEnv === 'production';
+
   [
     { path: '/' },
     { path: '/api/auth' },
   ].forEach((cookieOptions) => {
     response.clearCookie('token', {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: config.nodeEnv === 'production',
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       ...cookieOptions,
     });
   });
